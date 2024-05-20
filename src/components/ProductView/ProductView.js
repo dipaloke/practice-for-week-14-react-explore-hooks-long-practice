@@ -1,35 +1,48 @@
-import React from 'react';
+import React, { useState } from "react";
 import ProductListItem from "../ProductListItem";
 import ProductDetails from "../ProductDetails";
-import './ProductView.css'
+import "./ProductView.css";
 
 function ProductView({ products }) {
+  console.log({ products });
+  const [sideOpen, setSideOpen] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(() => {
+    const savedProduct = localStorage.getItem("selectedProduct");
+    return savedProduct ? JSON.parse(savedProduct) : {};
+  });
 
-  // TODO: Replace with state variable
-  const sideOpen = true;
+  const handleSideToggle = () => {
+    setSideOpen(!sideOpen);
+  };
+
+  const handleSelectedProduct = (item) => {
+    setSelectedProduct(item);
+    localStorage.setItem("selectedProduct", JSON.stringify(item));
+  };
 
   return (
     <div className="product-view">
       <div className="product-main-area">
         <h1>Products</h1>
         <div className="product-list">
-          {products.map(item =>
+          {products.map((item) => (
             <ProductListItem
               key={item.id}
               product={item}
-              onClick={() => console.log('SELECT PRODUCT', item)}
+              onClick={() => handleSelectedProduct(item)}
+              isSelected={selectedProduct.id === item.id}
             />
-          )}
+          ))}
         </div>
       </div>
       <div className="product-side-panel">
         <div className="product-side-panel-toggle-wrapper">
-          <div className="product-side-panel-toggle"
-               onClick={() => console.log('TOGGLE SIDE PANEL')}>
-            {sideOpen ? '>' : '<'}
+          <div className="product-side-panel-toggle" onClick={handleSideToggle}>
+            {sideOpen ? ">" : "<"}
           </div>
         </div>
-        <ProductDetails visible={sideOpen} />
+        {console.log({ selectedProduct })}
+        <ProductDetails visible={sideOpen} product={selectedProduct} />
       </div>
     </div>
   );
